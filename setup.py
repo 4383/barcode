@@ -17,7 +17,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='barcode',
+    name='barcode-generator',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -47,8 +47,8 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Intended Audience :: Customer Services',
-        'Intended Audience :: Industry Legal',
+        'Intended Audience :: Customer Service',
+        'Intended Audience :: Legal Industry',
         'Intended Audience :: Information Technology',
         'Intended Audience :: Manufacturing',
         'Intended Audience :: Developers',
