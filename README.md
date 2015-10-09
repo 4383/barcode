@@ -1,6 +1,7 @@
 # barcode
 Simple lightweight python barcode EAN 13 generator. Output format SVG and ASCII
-Only provide EAN 13 norme output
+
+Only provide EAN 13 barcode type
 
 Summary
 -------
