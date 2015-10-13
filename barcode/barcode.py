@@ -1,11 +1,11 @@
 #! -*-coding:utf8-*-
-__author__ = 'Herve.Beraud'
-
-'''
-
-'''
-
+from __future__ import print_function
 import argparse
+
+'''
+
+'''
+
 VERSION = "0.1rc1"
 A = 0
 B = 1
@@ -98,7 +98,10 @@ def get_user_input(input_value):
         if check_input_validity(input_value):
             return input_value
     while True:
-        current_code = input("Your code (max len 13 char): ")
+        try:
+            current_code = raw_input("Your code (max len 13 char): ")
+        except:
+            current_code = input("Your code (max len 13 char): ")
         if check_input_validity(current_code):
             return current_code
 
@@ -323,9 +326,10 @@ def version():
 
 
 def brand():
-    print("barcode-generator\nDeveloped By Hervé Beraud")
+    print("barcode\nDeveloped By Hervé Beraud")
 
-if __name__ == "__main__":
+
+def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help='User input (digits list, len 13 digits strict)')
     parser.add_argument('-o', help='Output filename. Save SVG output into a file with this filename')
@@ -341,3 +345,6 @@ if __name__ == "__main__":
     if not args.nb:
         brand()
     main(args.ascii, args.i, args.o)
+
+if __name__ == "__main__":
+    run()

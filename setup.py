@@ -1,3 +1,4 @@
+#! -*-coding:utf8-*-
 """A setuptools based setup module.
 See:
 https://packaging.python.org/en/latest/distributing.html
@@ -22,7 +23,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1rc1',
+    version='0.1rc12',
 
     description='Simple lightweight python barcode EAN generator. Output format SVG and ASCII',
     long_description=long_description,
@@ -73,8 +74,9 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-
+    #packages=find_packages(exclude=['contrib', 'docs', 'tests*'])
+    packages=['barcode'],
+    
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
@@ -94,7 +96,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'sample': [],
+        #'barcode': ['barcode.py'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -108,7 +110,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'barcode=barcode:main',
+            'barcode=barcode:execute_from_command_line',
         ],
     },
 )
