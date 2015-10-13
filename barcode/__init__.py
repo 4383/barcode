@@ -1,4 +1,4 @@
-import barcode
+import barcode.main
 
 def execute_from_command_line(argv=None):
-	barcode.run()
+	main.run()
