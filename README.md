@@ -24,11 +24,24 @@ or
 `$ python setup.py install`
 
 
-Usage
+Usage examples
 ------
 `$ barcode`
 
+`$ barcode -i 0123456789123`
+
+`$ barcode -i 0123456789123 -o my_barcode.html` 
+
 `$ python barcode.py`
+
+Options
+-------
+* `-i` User input (digits list, len 13 digits strict)
+* `-o` Save output into the output filename specified here
+* `-ascii` Display barcode ASCII value on the standard output
+* `-version` Display version
+* `-nb` Hide software informations (No Brand)
+* `-h` Show help message
 
 About
 -----
