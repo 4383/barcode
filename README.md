@@ -46,4 +46,4 @@ Options
 About
 -----
 Written by Hervé BERAUD
-Retrieve on Pypi => https://pypi.python.org/pypi/barcode-generator/0.1rc1
+Retrieve on Pypi => https://pypi.python.org/pypi/barcode-generator/
