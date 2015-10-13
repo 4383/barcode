@@ -6,7 +6,7 @@ import argparse
 
 '''
 
-VERSION = "0.1rc13"
+VERSION = "0.1rc15"
 A = 0
 B = 1
 C = 2
