@@ -317,7 +317,7 @@ def main(ascii_output, input_value=None, output=None):
     svg = generate_svg(converted_list, current_code)
     if output:
         save(svg, output)
-    else:
+    elif not ascii_output:
         print("\n{0}".format(svg))
 
 
