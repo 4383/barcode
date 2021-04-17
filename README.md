@@ -28,22 +28,31 @@ Usage examples
 ------
 `$ barcode`
 
-`$ barcode -i 0123456789123`
+`$ barcode 0123456789123`
 
-`$ barcode -i 0123456789123 -o my_barcode.html` 
+`$ barcode 0123456789123 --ascii --html --svg`
+
+`$ barcode 0123456789123 --ascii --html --svg -o ["these fruits, these vegetables"](https://www.youtube.com/watch?v=lHU_AJfrZlM)` 
 
 `$ python barcode.py`
 
 Options
 -------
-* `-i` User input (digits list, len 13 digits strict)
-* `-o` Save output into the output filename specified here
-* `-ascii` Display barcode ASCII value on the standard output
-* `-version` Display version
-* `-nb` Hide software informations (No Brand)
-* `-h` Show help message
+* `-m | --motif` Display motif
+* `-o | --outfile` Output filename. Save SVG/ASCII/HTML output(s) into a file with this filename. Extensions will be set automatically. Defaults to argument
+* `-c | --copy` Copy to clipboard
+* `-a | --author` Display software information
+* `-v | --version` Display version'
+* `--ascii` Display the ASCII value on the standard output
+* `--svg` Display the svg value on the standard output
+* `--html` Display the svg value on the standard output
+
+
+
 
 About
 -----
 Written by Hervé BERAUD
 Retrieve on Pypi => https://pypi.python.org/pypi/barcode-generator/
+
+https://www.youtube.com/watch?v=lHU_AJfrZlM

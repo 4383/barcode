@@ -2,11 +2,13 @@
 from __future__ import print_function
 import argparse
 
-'''
+import pyperclip
 
 '''
 
-VERSION = "0.1rc15"
+'''
+
+VERSION = "0.1rc15.0"
 A = 0
 B = 1
 C = 2
@@ -94,16 +96,15 @@ def get_user_input(input_value):
     Question user for input
     :return:
     """
-    if input_value:
-        if check_input_validity(input_value):
-            return input_value
-    while True:
+    pred = lambda iv: isinstance(iv, type(None)) or not check_input_validity(iv)
+    
+    while pred(input_value):
         try:
-            current_code = raw_input("Your code (max len 13 char): ")
+            input_value = raw_input("Your code (max length 13 char from [0, 9]): ")
         except:
-            current_code = input("Your code (max len 13 char): ")
-        if check_input_validity(current_code):
-            return current_code
+            input_value = input("Your code (max length 13 char from [0, 9]): ")
+    return input_value
+        
 
 
 def retrieve_motif(current_code):
@@ -215,18 +216,11 @@ def construct_barcode(current_formated_code):
     return converted_list
 
 
-def display_barcode_to_ascii(converted_list):
-    '''
-    Display barcode on the stdin.
-    Diplay on ASCII format
-    :param converted_list: list of displayable value
-    :return: None
-    '''
-    print("\nBarcode : ")
-    for line in range(0, 5):
-        for value in converted_list:
-            print(convert_value_to_ascii(value), end="")
-        print("\r")
+def generate_ascii(converted_list):
+    return ''.join(map(str, map(
+        convert_value_to_ascii,
+        converted_list
+    )))
 
 
 def display_selected_scheme(current_scheme):
@@ -289,36 +283,55 @@ def generate_html_content(svg):
     return "<html><body>" + svg + "</body></html>"
 
 
-def save(svg, filename):
+def save(filename, content, extension):
     '''
     Save HTML content in file
     :param svg:
     :param filename:
     :return:
     '''
-    with open(filename, "w+") as output:
-        output.write(generate_html_content(svg))
-    print("\nResult saved into {0}".format(filename))
+    filename = f"{filename}.{extension}"
+    with open(filename, "w+") as outfile:
+        outfile.write(content)
+    print(f"Result saved into {filename}")
 
 
-def main(ascii_output, input_value=None, output=None):
+def main(args):
     '''
     Launch barcode.py
     :return:
     '''
-    current_code = get_user_input(input_value)
+    current_code = get_user_input(args.argument)
     current_motif = retrieve_motif(current_code)
-    display_selected_scheme(current_motif)
+    
+    if args.motif:
+        display_selected_scheme(current_motif)
+    
     extracted_value = extract_values_to_encode(current_code)
     current_code_formated = assemble_value_representation(extracted_value, current_motif)
     converted_list = construct_barcode(current_code_formated)
-    if ascii_output:
-        display_barcode_to_ascii(converted_list)
-    svg = generate_svg(converted_list, current_code)
-    if output:
-        save(svg, output)
-    elif not ascii_output:
-        print("\n{0}".format(svg))
+    
+    ascii = generate_ascii(converted_list)
+    content = ascii
+    print()
+    [print(f"{ascii}") for i in range(5)]
+    
+    filename = args.outfile if args.outfile else f"barcode-{args.argument}"
+        
+    print()
+    if args.ascii:
+        save(filename, ascii, 'ascii')
+    if args.html:
+        svg = generate_svg(converted_list, current_code)
+        html = generate_html_content(svg)
+        content = html
+        save(filename, html, 'html')
+    if args.svg:
+        svg = generate_svg(converted_list, current_code)
+        content = svg
+        save(filename, svg, 'svg')
+    if args.copy:
+        pyperclip.copy(content)
 
 
 def version():
@@ -326,25 +339,33 @@ def version():
 
 
 def brand():
-    print("barcode\nDeveloped By Hervé Beraud")
+    print(f"barcode v{VERSION}\n\tDeveloped By Hervé Beraud\n\tEdited by Kenneth Elisandro")
 
 
 def run():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', help='User input (digits list, len 13 digits strict)')
-    parser.add_argument('-o', help='Output filename. Save SVG output into a file with this filename')
-    parser.add_argument('-ascii', help='Display the ASCII value on the standard output', action='store_true')
-    parser.add_argument('-version', help='Display version', action='store_true')
-    parser.add_argument('-nb', help='Hide software informations (No Brand)', action='store_true')
+    parser.add_argument('argument', help='Your code (max length 13 char from [0, 9])')
+    parser.add_argument('-m', '--motif', help='Display motif', action='store_true')
+    parser.add_argument('-o', '--outfile', help='Output filename. Save SVG/ASCII/HTML output(s) into a file with this filename. Extensions will be set automatically. Defaults to argument')
+    parser.add_argument('-c', '--copy', help='Copy to clipboard', action='store_true')
+    parser.add_argument('--ascii', help='Display the ASCII value on the standard output', action='store_true')
+    parser.add_argument('--svg', help='Display the svg value on the standard output', action='store_true')
+    parser.add_argument('--html', help='Display the svg value on the standard output', action='store_true')
+    parser.add_argument('-a', '--author', help='Hide software informations (No Brand)', action='store_true')
+    parser.add_argument('-v', '--version', help='Display version', action='store_true')
+    parser.set_defaults(m=False)
+    parser.set_defaults(c=False)
     parser.set_defaults(ascii=False)
+    parser.set_defaults(svg=False)
+    parser.set_defaults(html=False)
     parser.set_defaults(version=False)
-    parser.set_defaults(nb=False)
+    parser.set_defaults(author=False)
     args = parser.parse_args()
     if args.version:
         version()
-    if not args.nb:
+    if args.author:
         brand()
-    main(args.ascii, args.i, args.o)
+    main(args)
 
 if __name__ == "__main__":
     run()
