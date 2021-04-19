@@ -32,7 +32,7 @@ Usage examples
 
 `$ barcode 0123456789123 --ascii --html --svg`
 
-`$ barcode 0123456789123 --ascii --html --svg -o ["these fruits, these vegetables"](https://www.youtube.com/watch?v=lHU_AJfrZlM)` 
+`$ barcode 0123456789123 --ascii --html --svg -o "these fruits, these vegetables"` 
 
 `$ python barcode.py`
 
@@ -55,4 +55,4 @@ About
 Written by Hervé BERAUD
 Retrieve on Pypi => https://pypi.python.org/pypi/barcode-generator/
 
-https://www.youtube.com/watch?v=lHU_AJfrZlM
+[These Fruits, These Vegetables](https://www.youtube.com/watch?v=lHU_AJfrZlM)
