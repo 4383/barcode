@@ -1,12 +1,11 @@
 #! -*-coding:utf8-*-
-from __future__ import print_function
+from __future__ import annotations
 import argparse
 
-'''
+import pyperclip
 
-'''
 
-VERSION = "0.1rc15"
+VERSION = "0.1rc15.0"
 A = 0
 B = 1
 C = 2
@@ -74,7 +73,7 @@ scheme = {
 }
 
 
-def check_input_validity(current_code):
+def check_input_validity(current_code:str) -> bool:
     """
     Check if user input is valid
     :param current_code:
@@ -89,24 +88,23 @@ def check_input_validity(current_code):
         return False
 
 
-def get_user_input(input_value):
+def get_user_input(input_value:str) -> str:
     """
     Question user for input
     :return:
     """
-    if input_value:
-        if check_input_validity(input_value):
-            return input_value
-    while True:
+    pred = lambda iv: isinstance(iv, type(None)) or not check_input_validity(iv)
+    
+    while pred(input_value):
         try:
-            current_code = raw_input("Your code (max len 13 char): ")
+            input_value = input("Your code (max length 13 char from [0, 9]):\n\t")
         except:
-            current_code = input("Your code (max len 13 char): ")
-        if check_input_validity(current_code):
-            return current_code
+            input_value = input("Your code (max length 13 char from [0, 9]):\n\t")
+    return input_value
+        
 
 
-def retrieve_motif(current_code):
+def retrieve_motif(current_code:str) -> list[int]:
     """
     Retrieve scheme from a valid user input
     Scheme is determined by the first digit of the user input
@@ -117,7 +115,7 @@ def retrieve_motif(current_code):
     return scheme[corresponding]
 
 
-def retrieve_value(current_scheme, current_digit):
+def retrieve_value(current_scheme:int , current_digit:str) -> list[int]:
     '''
     Retrieve display representation for digit.
     Value corresponding to scheme applying on this digit
@@ -128,7 +126,7 @@ def retrieve_value(current_scheme, current_digit):
     return elements[current_scheme][int(current_digit)]
 
 
-def convert_value_to_ascii(values):
+def convert_value_to_ascii(values:list[int]) -> str:
     '''
     Generating ASCII display for one digit
     :param values: the digit to convert
@@ -143,22 +141,7 @@ def convert_value_to_ascii(values):
     return output
 
 
-def convert_value_to_color(values):
-    '''
-    Generating coloring display for one digit
-    :param values: the digit to convert
-    :return: List of colors
-    '''
-    output = []
-    for value in values:
-        current = WHITE
-        if value == 1:
-            current = BLACK
-        output.append(current)
-    return output
-
-
-def extract_values_to_encode(current_code):
+def extract_values_to_encode(current_code:str) -> str:
     '''
     Extract the digits to convert on a displayable representation
     :param current_code:
@@ -167,7 +150,7 @@ def extract_values_to_encode(current_code):
     return current_code[1:]
 
 
-def append_side_delimiter():
+def append_side_delimiter() -> dict[str, int]:
     '''
     Generate a side delimiter
     :return:
@@ -175,7 +158,7 @@ def append_side_delimiter():
     return {"value": 0, "mask": WILDCARD}
 
 
-def append_middle_delimiter():
+def append_middle_delimiter() -> dict[str, int]:
     '''
     Generate a center delimiter
     :return:
@@ -183,7 +166,7 @@ def append_middle_delimiter():
     return {"value": 1, "mask": WILDCARD}
 
 
-def assemble_value_representation(extracted_value, current_scheme):
+def assemble_value_representation(extracted_value:str, current_scheme:list[int]) -> list[dict[str, int]]:
     '''
     Associate masks by digits
     :param extracted_value: digits list
@@ -203,7 +186,7 @@ def assemble_value_representation(extracted_value, current_scheme):
     return current_formated_code
 
 
-def construct_barcode(current_formated_code):
+def construct_barcode(current_formated_code:list[dict[str, int]]) -> list[list[int]]:
     '''
     Convert digit/scheme information into displayable representation
     :param current_formated_code: associated values and schemes
@@ -215,21 +198,19 @@ def construct_barcode(current_formated_code):
     return converted_list
 
 
-def display_barcode_to_ascii(converted_list):
+def generate_ascii(converted_list:list[list[int]]) -> str:
     '''
-    Display barcode on the stdin.
-    Diplay on ASCII format
-    :param converted_list: list of displayable value
-    :return: None
+    Compute the ascii string representation of the barcode constructed by construct_barcode
+    :param converted_list: 
+    :return: string of Hash symbols and Spaces
     '''
-    print("\nBarcode : ")
-    for line in range(0, 5):
-        for value in converted_list:
-            print(convert_value_to_ascii(value), end="")
-        print("\r")
+    return ''.join(map(str, map(
+        convert_value_to_ascii,
+        converted_list
+    )))
 
 
-def display_selected_scheme(current_scheme):
+def display_selected_scheme(current_scheme:list[int]):
     '''
     Display the selected scheme.
     Depend of the first digit
@@ -246,7 +227,22 @@ def display_selected_scheme(current_scheme):
         print(current_value, end="")
 
 
-def unify_value(converted_list):
+def convert_value_to_color(values:list[list[int]]) -> list[str]:
+    '''
+    Generating coloring display for one digit
+    :param values: the digit to convert
+    :return: List of colors
+    '''
+    output = []
+    for value in values:
+        current = WHITE
+        if value == 1:
+            current = BLACK
+        output.append(current)
+    return output
+
+
+def unify_value(converted_list:list[list[int]]) -> list[str]:
     '''
     Generate list of color values
     1 digit = 7 colors
@@ -259,7 +255,7 @@ def unify_value(converted_list):
     return unified_values
 
 
-def generate_svg(converted_list, current_code):
+def generate_svg(converted_list:list[list[int]], current_code:str) -> str:
     '''
     Generate SVG output format
     :param converted_list: list
@@ -280,7 +276,7 @@ def generate_svg(converted_list, current_code):
     return svg_output
 
 
-def generate_html_content(svg):
+def generate_html_content(svg:str) -> str:
     '''
     Generate HTML content file
     :param svg: SVG to integrate into html
@@ -289,36 +285,55 @@ def generate_html_content(svg):
     return "<html><body>" + svg + "</body></html>"
 
 
-def save(svg, filename):
+def save(filename:str, content:str, extension:str):
     '''
     Save HTML content in file
     :param svg:
     :param filename:
     :return:
     '''
-    with open(filename, "w+") as output:
-        output.write(generate_html_content(svg))
-    print("\nResult saved into {0}".format(filename))
+    filename = f"{filename}.{extension}"
+    with open(filename, "w+") as outfile:
+        outfile.write(content)
+    print(f"Result saved into {filename}")
 
 
-def main(ascii_output, input_value=None, output=None):
+def main(args:argparse.Namespace):
     '''
     Launch barcode.py
     :return:
     '''
-    current_code = get_user_input(input_value)
+    current_code = get_user_input(args.argument)
     current_motif = retrieve_motif(current_code)
-    display_selected_scheme(current_motif)
+    
+    if args.motif:
+        display_selected_scheme(current_motif)
+    
     extracted_value = extract_values_to_encode(current_code)
     current_code_formated = assemble_value_representation(extracted_value, current_motif)
     converted_list = construct_barcode(current_code_formated)
-    if ascii_output:
-        display_barcode_to_ascii(converted_list)
-    svg = generate_svg(converted_list, current_code)
-    if output:
-        save(svg, output)
-    else:
-        print("\n{0}".format(svg))
+    
+    ascii = generate_ascii(converted_list)
+    content = ascii
+    print()
+    [print(f"{ascii}") for i in range(5)]
+    
+    filename = args.outfile if args.outfile else f"barcode-{args.argument}"
+        
+    print()
+    if args.ascii:
+        save(filename, ascii, 'ascii')
+    if args.html:
+        svg = generate_svg(converted_list, current_code)
+        html = generate_html_content(svg)
+        content = html
+        save(filename, html, 'html')
+    if args.svg:
+        svg = generate_svg(converted_list, current_code)
+        content = svg
+        save(filename, svg, 'svg')
+    if args.copy:
+        pyperclip.copy(content)
 
 
 def version():
@@ -326,25 +341,36 @@ def version():
 
 
 def brand():
-    print("barcode\nDeveloped By Hervé Beraud")
+    print(f"barcode v{VERSION}\n\tDeveloped By Hervé Beraud")
 
 
-def run():
+def parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', help='User input (digits list, len 13 digits strict)')
-    parser.add_argument('-o', help='Output filename. Save SVG output into a file with this filename')
-    parser.add_argument('-ascii', help='Display the ASCII value on the standard output', action='store_true')
-    parser.add_argument('-version', help='Display version', action='store_true')
-    parser.add_argument('-nb', help='Hide software informations (No Brand)', action='store_true')
+    parser.add_argument('argument', help='Your code (max length 13 char from [0, 9])')
+    parser.add_argument('-m', '--motif', help='Display motif', action='store_true')
+    parser.add_argument('-o', '--outfile', help='Output filename. Save SVG/ASCII/HTML output(s) into a file with this filename. Extensions will be set automatically. Defaults to argument')
+    parser.add_argument('-c', '--copy', help='Copy to clipboard', action='store_true')
+    parser.add_argument('--ascii', help='Display the ASCII value on the standard output', action='store_true')
+    parser.add_argument('--svg', help='Display the svg value on the standard output', action='store_true')
+    parser.add_argument('--html', help='Display the svg value on the standard output', action='store_true')
+    parser.add_argument('-a', '--author', help='Hide software informations (No Brand)', action='store_true')
+    parser.add_argument('-v', '--version', help='Display version', action='store_true')
+    parser.set_defaults(m=False)
+    parser.set_defaults(c=False)
     parser.set_defaults(ascii=False)
+    parser.set_defaults(svg=False)
+    parser.set_defaults(html=False)
     parser.set_defaults(version=False)
-    parser.set_defaults(nb=False)
+    parser.set_defaults(author=False)
+    
     args = parser.parse_args()
+    
     if args.version:
         version()
-    if not args.nb:
+    if args.author:
         brand()
-    main(args.ascii, args.i, args.o)
+    
+    main(args)
 
 if __name__ == "__main__":
-    run()
+    parse()
